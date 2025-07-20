@@ -1,6 +1,7 @@
 <template>
   <v-form ref="formRef" v-model="valid" @submit.prevent="handleSubmit">
     <v-text-field
+      class="mb-4"
       v-model="email"
       label="E-mail"
       type="text"
@@ -10,8 +11,9 @@
       :rules="[rules.required, rules.email]"
       :error-messages="getFieldErrors(authStore.fieldErrors, 'email')"
     />
-    <!-- TODO add space betwen -->
+
     <v-text-field
+      class="mb-4"
       v-model="password"
       :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
       label="Senha"

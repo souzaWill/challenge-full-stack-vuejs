@@ -1,6 +1,7 @@
 <template>
   <v-form ref="formRef" v-model="valid" @submit.prevent="handleSubmit">
     <v-text-field
+      class="mb-2"
       v-model="name"
       label="Nome"
       type="text"
@@ -11,6 +12,7 @@
       :error-messages="getFieldErrors(userStore.fieldErrors, 'email')"
     />
     <v-text-field
+      class="mb-2"
       v-model="email"
       label="Email"
       type="text"
@@ -20,8 +22,8 @@
       :rules="[rules.required, rules.email]"
       :error-messages="getFieldErrors(userStore.fieldErrors, 'email')"
     />
-    <!-- TODO add space betwen -->
     <v-text-field
+      class="mb-2"
       v-model="password"
       :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
       label="Senha"
@@ -34,6 +36,7 @@
       :error-messages="getFieldErrors(userStore.fieldErrors, 'password')"
     />
     <v-text-field
+      class="mb-2"
       v-model="confirmPassword"
       :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
       label="Confime a senha"
