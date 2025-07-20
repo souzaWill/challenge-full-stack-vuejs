@@ -17,6 +17,17 @@ const router = createRouter({
       ],
     },
     {
+      path: '/signin',
+      component: GuestLayout,
+      children: [
+        {
+          path: '',
+          name: 'signin',
+          component: () => import('@/pages/SignUpPage.vue'),
+        },
+      ],
+    },
+    {
       path: '/',
       component: AuthLayout,
       children: [
@@ -26,6 +37,10 @@ const router = createRouter({
           component: () => import('@/pages/HomePage.vue'),
         },
       ],
+    },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/login', //TODO fazer uma pagina de 404
     },
   ],
 })

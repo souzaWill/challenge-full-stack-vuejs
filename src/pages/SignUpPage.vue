@@ -1,26 +1,27 @@
 <template>
   <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
     <ErrorAlert :message="errorMessage" />
-    <LoginForm :onSuccess="handleLoginSuccess" :onError="handleLoginError" />
-    <SigninText />
+    <UserForm :onSuccess="handleSignupSuccess" :onError="handleSignupError" />
+    <SignupText />
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import LoginForm from '@/components/auth/LoginForm.vue'
 import { useRouter } from 'vue-router'
 import ErrorAlert from '@/components/shared/ErrorAlert.vue'
-import SigninText from '@/components/auth/SigninText.vue'
+import AppLogo from '@/components/auth/AppLogo.vue'
+import SignupText from '@/components/auth/SignupText.vue'
+import UserForm from '@/components/auth/UserForm.vue'
 
 const router = useRouter()
 const errorMessage = ref<string | null>(null)
 
-const handleLoginSuccess = () => {
-  router.push('/')
+const handleSignupSuccess = () => {
+  router.push('/login')
 }
 
-const handleLoginError = (message: string | null) => {
+const handleSignupError = (message: string | null) => {
   errorMessage.value = message
 }
 </script>
