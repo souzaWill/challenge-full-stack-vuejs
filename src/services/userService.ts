@@ -14,6 +14,6 @@ interface UserResponse {
 }
 
 export const handleStoreUser = async (user: User): Promise<UserResponse> => {
-  const { data } = await api.post<UserResponse>('/user', user)
+  const { data } = await api.post<UserResponse>('/register', user)
   return data
 }

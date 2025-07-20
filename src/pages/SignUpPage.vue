@@ -10,7 +10,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorAlert from '@/components/shared/ErrorAlert.vue'
-import AppLogo from '@/components/auth/AppLogo.vue'
 import SignupText from '@/components/auth/SignupText.vue'
 import UserForm from '@/components/auth/UserForm.vue'
 
