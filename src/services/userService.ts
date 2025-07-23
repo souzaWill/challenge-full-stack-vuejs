@@ -1,19 +1,14 @@
 import api from './api'
+import type { User } from '@/types/user'
 
-interface User {
+interface RegisterUserPayload {
   name: string
   email: string
   password: string
   confirmPassword: string
 }
 
-interface UserResponse {
-  id: string
-  email: string
-  name: string
-}
-
-export const handleStoreUser = async (user: User): Promise<UserResponse> => {
-  const { data } = await api.post<UserResponse>('/register', user)
+export const handleStoreUser = async (user: RegisterUserPayload): Promise<User> => {
+  const { data } = await api.post<User>('/register', user)
   return data
 }

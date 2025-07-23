@@ -29,7 +29,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const drawer = ref(true)
+const drawer = ref(false)
 const authStore = useAuthStore()
 
 const logout = async () => {
