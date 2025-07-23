@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { handleLoginRequest } from '@/services/authService'
+import { ref } from 'vue'
+import { handleStoreUser } from '@/services/userService'
 
-interface User {
-  id: string
+interface UserForm {
   email: string
   name: string
+  password: string
+  confirmPassword: string
 }
 
 interface FieldError {
@@ -13,34 +14,22 @@ interface FieldError {
   message: string
 }
 
-interface Credentials {
-  email: string
-  password: string
-}
-
-export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
-  const token = ref(localStorage.getItem('token'))
+export const useUserStore = defineStore('user', () => {
   const loading = ref(false)
   const fieldErrors = ref<FieldError[] | null>(null)
   const error = ref<string | null>(null)
-
-  const isAuthenticated = computed(() => !!token.value)
 
   const resetErrors = () => {
     fieldErrors.value = null
     error.value = null
   }
 
-  const login = async (credentials: Credentials) => {
+  const create = async (userForm: UserForm) => {
     loading.value = true
     resetErrors()
 
     try {
-      const { user: responseUser, token: responseToken } = await handleLoginRequest(credentials)
-      user.value = responseUser
-      token.value = responseToken
-      localStorage.setItem('token', responseToken)
+      await handleStoreUser(userForm)
       return true
     } catch (err: any) {
       //TODO: melhorar
@@ -64,20 +53,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const logout = () => {
-    token.value = null
-    user.value = null
-    localStorage.removeItem('token')
-  }
-
   return {
-    user,
-    token,
     loading,
     fieldErrors,
     error,
-    isAuthenticated,
-    login,
-    logout,
+    create,
   }
 })

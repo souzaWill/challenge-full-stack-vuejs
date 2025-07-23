@@ -1,5 +1,6 @@
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import GuestLayout from '@/layouts/GuestLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -17,6 +18,17 @@ const router = createRouter({
       ],
     },
     {
+      path: '/signin',
+      component: GuestLayout,
+      children: [
+        {
+          path: '',
+          name: 'signin',
+          component: () => import('@/pages/SignUpPage.vue'),
+        },
+      ],
+    },
+    {
       path: '/',
       component: AuthLayout,
       children: [
@@ -24,10 +36,23 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: () => import('@/pages/HomePage.vue'),
+          meta: { requiresAuth: true },
         },
       ],
     },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/login', //TODO fazer uma pagina de 404
+    },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  const requiresAuth = to.meta.requiresAuth
+
+  if (requiresAuth && !authStore.isAuthenticated) next('/login')
+  next()
 })
 
 export default router
