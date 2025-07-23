@@ -1,5 +1,18 @@
 <template>
   <v-app>
+    <AppSnackbar
+      :timeout="notificationStore.timeout"
+      :message="notificationStore.message"
+      :color="notificationStore.type"
+      :show="notificationStore.visible"
+    />
+
+    <AppSnackbar
+      timeout="3000"
+      :message="errorStore.message"
+      color="error"
+      :show="errorStore.hasError"
+    />
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click="toggle"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ 'Gereciamento de Matriculas +A Educacao' }}</v-toolbar-title>
@@ -9,7 +22,7 @@
 
     <v-navigation-drawer app v-model="drawer" color="primary lighten-4">
       <v-list>
-        <v-list-item link @click="navigate('/')">
+        <v-list-item link @click="navigate('/students')">
           <v-list-item-title>{{ 'Alunos' }}</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -24,13 +37,18 @@
 </template>
 
 <script setup lang="ts">
+import AppSnackbar from '@/components/shared/AppSnackbar.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useErrorStore } from '@/stores/error'
+import { useNotificationStore } from '@/stores/notification'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const drawer = ref(true)
+const drawer = ref(false)
 const authStore = useAuthStore()
+const errorStore = useErrorStore()
+const notificationStore = useNotificationStore()
 
 const logout = async () => {
   authStore.logout()
