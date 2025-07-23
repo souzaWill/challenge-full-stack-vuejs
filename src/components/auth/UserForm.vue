@@ -9,7 +9,7 @@
       prepend-inner-icon="mdi-account-outline"
       variant="outlined"
       :rules="[rules.required, rules.name, rules.nameOnlyLetters]"
-      :error-messages="getFieldErrors(userStore.fieldErrors, 'email')"
+      :error-messages="errorStore.getFieldError('name')"
     />
     <v-text-field
       class="mb-2"
@@ -20,7 +20,7 @@
       prepend-inner-icon="mdi-email-outline"
       variant="outlined"
       :rules="[rules.required, rules.email]"
-      :error-messages="getFieldErrors(userStore.fieldErrors, 'email')"
+      :error-messages="errorStore.getFieldError('email')"
     />
     <v-text-field
       class="mb-2"
@@ -33,7 +33,7 @@
       variant="outlined"
       @click:append-inner="() => (visible = !visible)"
       :rules="[rules.required, rules.passwordMin]"
-      :error-messages="getFieldErrors(userStore.fieldErrors, 'password')"
+      :error-messages="errorStore.getFieldError('password')"
     />
     <v-text-field
       class="mb-2"
@@ -46,22 +46,19 @@
       variant="outlined"
       @click:append-inner="() => (visible = !visible)"
       :rules="[rules.required, rules.confirmPassword(password)]"
-      :error-messages="getFieldErrors(userStore.fieldErrors, 'confirmPassword')"
+      :error-messages="errorStore.getFieldError('confirmPassword')"
     />
     <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal">
       Sign Up
     </v-btn>
   </v-form>
-
-  <!-- TODO: talvez esse componente deva ficar globalmente ou na pagina de login avaliar -->
-  <AppLoading :show="userStore.loading" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getFieldErrors } from '@/utils/getFieldErrors'
-import AppLoading from '@/components/shared/AppLoading.vue'
 import { useUserStore } from '@/stores/user'
+import { useErrorStore } from '@/stores/error'
+import { rules } from '@/utils/validationRules'
 
 const { onSuccess, onError } = defineProps<{
   onSuccess: () => void
@@ -77,18 +74,7 @@ const valid = ref(false)
 const formRef = ref()
 const visible = ref(false)
 const userStore = useUserStore()
-
-const rules = {
-  required: (v: string) => !!v || 'Campo obrigatório',
-  name: (v: string) => (v && v.trim().length >= 2) || 'O nome deve ter ao menos 2 caracteres',
-  nameOnlyLetters: (v: string) =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(v) || 'O nome só pode conter letras e espaços',
-  email: (v: string) => /.+@.+\..+/.test(v) || 'E-mail inválido',
-  passwordMin: (v: string) => v.length >= 8 || 'A senha deve ter no mínimo 8 caracteres',
-  confirmPassword: (password: string) => {
-    return (v: string) => v === password || 'As senhas não coincidem'
-  },
-}
+const errorStore = useErrorStore()
 
 const handleSubmit = async () => {
   valid.value = (await formRef.value?.validate())?.valid
@@ -103,6 +89,6 @@ const handleSubmit = async () => {
   }
 
   const success = await userStore.create(formData)
-  success ? onSuccess() : onError(userStore.error)
+  success ? onSuccess() : onError(errorStore.message)
 }
 </script>
