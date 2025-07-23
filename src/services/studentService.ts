@@ -1,7 +1,6 @@
 import type { Student } from '@/types/student'
 import api from './api'
 
-//TODO type payloads
 export async function fetchStudentsApi() {
   const response = await api.get('/students')
   return response.data
