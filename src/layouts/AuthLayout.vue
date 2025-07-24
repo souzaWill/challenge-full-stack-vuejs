@@ -7,12 +7,6 @@
       :show="notificationStore.visible"
     />
 
-    <AppSnackbar
-      timeout="3000"
-      :message="errorStore.message"
-      color="error"
-      :show="errorStore.hasError"
-    />
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click="toggle"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ 'Gereciamento de Matriculas +A Educacao' }}</v-toolbar-title>

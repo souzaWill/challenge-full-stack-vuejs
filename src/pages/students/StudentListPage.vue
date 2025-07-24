@@ -47,7 +47,7 @@
   <ConfirmDialog
     :show="confirmDeleteDialog"
     title="Excluir estudante"
-    :text="confirmDialogText"
+    text="Você tem certeza que deseja excluir o estudante?"
     @confirm="handleDeleteStudent"
     @cancel="closeConfirmDeleteDialog"
   />
@@ -115,10 +115,4 @@ const openConfirmDeleteDialog = (student: Student) => {
   studentToDelete.value = student
   confirmDeleteDialog.value = true
 }
-
-const confirmDialogText = computed(() => {
-  return studentToDelete.value
-    ? `Are you sure you want to delete the student ${studentToDelete.value.user.name}?`
-    : 'Are you sure you want to delete the student?'
-})
 </script>

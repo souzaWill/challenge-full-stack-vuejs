@@ -13,10 +13,15 @@ export const useNotificationStore = defineStore('notification', () => {
     msgType: NotificationType = 'info',
     showingTime: string = '5000',
   ) => {
-    message.value = msg
-    type.value = msgType
-    timeout.value = showingTime
-    visible.value = true
+    visible.value = false
+    message.value = ''
+
+    setTimeout(() => {
+      message.value = msg
+      type.value = msgType
+      timeout.value = showingTime
+      visible.value = true
+    }, 10)
   }
 
   const clear = () => {

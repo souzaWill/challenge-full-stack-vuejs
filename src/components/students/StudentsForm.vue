@@ -10,13 +10,13 @@
       <v-text-field
         v-model="form.user.name"
         label="Nome"
-        :error-messages="errorStore.getFieldError('user.name')"
+        :error-messages="studentStore.getFieldError('user.name')"
         :rules="[rules.name, rules.required, rules.nameOnlyLetters]"
       />
       <v-text-field
         v-model="form.user.email"
         label="Email"
-        :error-messages="errorStore.getFieldError('user.email')"
+        :error-messages="studentStore.getFieldError('user.email')"
         :rules="[rules.email, rules.required]"
       />
 
@@ -24,7 +24,7 @@
         :model-value="maskedDocument"
         label="CPF"
         @update:modelValue="onDocumentInput"
-        :error-messages="errorStore.getFieldError('document')"
+        :error-messages="studentStore.getFieldError('document')"
         :rules="[rules.required, rules.cpf]"
         maxlength="14"
       />
@@ -44,9 +44,9 @@
 import type { Student } from '@/types/student'
 import { ref, watch, computed } from 'vue'
 import { useStudentsStore } from '@/stores/students'
-import { useErrorStore } from '@/stores/error'
 import { rules } from '@/utils/validationRules'
 import { formatCPF } from '@/utils/mask'
+import { useNotificationStore } from '@/stores/notification'
 
 const props = defineProps<{
   student?: Student | null
@@ -54,20 +54,19 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['submit', 'cancel'])
 const studentStore = useStudentsStore()
-const errorStore = useErrorStore()
+const notificationStore = useNotificationStore()
 
 const valid = ref(false)
 const formRef = ref()
 const maskedDocument = computed(() => formatCPF(form.value.document))
 
-//TODO melhorar
-const form = ref({
+const form = ref<Student>({
+  registrationNumber: '',
+  document: '',
   user: {
     name: '',
     email: '',
   },
-  registrationNumber: '',
-  document: '',
 })
 
 const onDocumentInput = (value: string) => {
@@ -85,7 +84,7 @@ watch(
 )
 
 const handleSubmit = async () => {
-  const valid = await formRef.value?.validate()
+  const { valid } = await formRef.value?.validate()
   if (!valid) return
 
   if (props.isEdit) {
@@ -93,6 +92,11 @@ const handleSubmit = async () => {
   } else {
     await studentStore.createStudent(form.value)
   }
-  emit('submit')
+
+  if (!studentStore.hasError) {
+    emit('submit')
+  }
+
+  notificationStore.notify(studentStore.error, 'error')
 }
 </script>
