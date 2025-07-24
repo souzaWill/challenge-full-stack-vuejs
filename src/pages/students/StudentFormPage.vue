@@ -28,7 +28,7 @@ import { useNotificationStore } from '@/stores/notification'
 
 const route = useRoute()
 const router = useRouter()
-const userStore = useStudentsStore()
+const studentStore = useStudentsStore()
 const notificationStore = useNotificationStore()
 
 const id = route.params.id as string | undefined
@@ -36,7 +36,7 @@ const student = ref<Student>()
 
 onMounted(async () => {
   if (id) {
-    student.value = await userStore.find(id)
+    student.value = await studentStore.find(id)
   }
 })
 

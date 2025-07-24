@@ -50,11 +50,12 @@ const props = defineProps<{
   isEdit?: boolean
 }>()
 const emit = defineEmits(['submit', 'cancel'])
-const userStore = useStudentsStore()
+const studentStore = useStudentsStore()
 const errorStore = useErrorStore()
 
 const valid = ref(false)
 const formRef = ref()
+//TODO melhorar
 const form = ref({
   user: {
     name: '',
@@ -68,20 +69,20 @@ watch(
   () => props.student,
   (newStudent) => {
     if (newStudent) {
-      form.value = JSON.parse(JSON.stringify(newStudent))
+      form.value = structuredClone(newStudent)
     }
   },
   { immediate: true },
 )
 
 const handleSubmit = async () => {
-  const { valid } = await formRef.value.validate()
+  const valid = await formRef.value?.validate()
   if (!valid) return
 
   if (props.isEdit) {
-    await userStore.updateStudent(form.value)
+    await studentStore.updateStudent(form.value)
   } else {
-    await userStore.createStudent(form.value)
+    await studentStore.createStudent(form.value)
   }
   emit('submit')
 }
