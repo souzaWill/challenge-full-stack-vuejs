@@ -1,16 +1,7 @@
 import type { Student } from '@/types/student'
 import api from './api'
 
-export async function fetchStudentsApi(options: any) {
-  const { page, itemsPerPage, sortBy, sortDesc } = options
-
-  const params = {
-    page,
-    perPage: itemsPerPage,
-    sortField: sortBy?.[0] ?? undefined,
-    sortDirection: sortDesc?.[0] ? 'desc' : 'asc',
-  }
-
+export async function fetchStudentsApi(params: any) {
   const response = await api.get('/students', { params })
   return response.data
 }
@@ -30,5 +21,6 @@ export async function updateStudentApi(id: string, data: Student) {
   return response.data
 }
 export async function deleteStudentApi(id: string) {
-  return await api.delete(`/students/${id}`)
+  const response = await api.delete(`/students/${id}`)
+  return response.data
 }

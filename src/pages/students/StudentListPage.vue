@@ -63,7 +63,7 @@ import TableRowActions from '@/components/shared/TableRowActions.vue'
 import { useStudentsStore } from '@/stores/students'
 import { useLoadingStore } from '@/stores/loading'
 import type { Student } from '@/types/student'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DataTableHeader } from 'vuetify'
 import { useNotificationStore } from '@/stores/notification'
@@ -87,7 +87,14 @@ const notificationStore = useNotificationStore()
 const router = useRouter()
 
 const loadStudents = async (options?: any) => {
-  await studentsStore.fetchStudents(options)
+  const { page, itemsPerPage, sortBy, sortDesc } = options
+
+  await studentsStore.fetchStudents({
+    page,
+    perPage: itemsPerPage,
+    sortField: sortBy?.[0] ?? undefined,
+    sortDirection: sortDesc?.[0] ? 'desc' : 'asc',
+  })
 
   if (studentsStore.hasError) {
     notificationStore.notify(studentsStore.error, 'error')
@@ -96,14 +103,15 @@ const loadStudents = async (options?: any) => {
 
 const handleDeleteStudent = async () => {
   if (studentToDelete.value?.id != null) {
-    await studentsStore.deleteStudent(studentToDelete.value?.id)
-    closeConfirmDeleteDialog()
-    if (studentsStore.hasError) {
+    const ok = await studentsStore.deleteStudent(studentToDelete.value?.id)
+    if (!ok) {
       notificationStore.notify(studentsStore.error, 'error')
       return
     }
+    closeConfirmDeleteDialog()
     notificationStore.notify('Deletado com sucesso', 'success')
   }
+
   studentToDelete.value = null
 }
 
