@@ -30,6 +30,10 @@ const router = createRouter({
       ],
     },
     {
+      path: '/',
+      redirect: '/students',
+    },
+    {
       path: '/students',
       component: AuthLayout,
       children: [
