@@ -21,10 +21,12 @@
       />
 
       <v-text-field
-        v-model="form.document"
+        :model-value="maskedDocument"
         label="CPF"
+        @update:modelValue="onDocumentInput"
         :error-messages="errorStore.getFieldError('document')"
         :rules="[rules.required, rules.cpf]"
+        maxlength="14"
       />
     </v-card-text>
 
@@ -40,10 +42,11 @@
 
 <script setup lang="ts">
 import type { Student } from '@/types/student'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useStudentsStore } from '@/stores/students'
 import { useErrorStore } from '@/stores/error'
 import { rules } from '@/utils/validationRules'
+import { formatCPF } from '@/utils/mask'
 
 const props = defineProps<{
   student?: Student | null
@@ -55,6 +58,8 @@ const errorStore = useErrorStore()
 
 const valid = ref(false)
 const formRef = ref()
+const maskedDocument = computed(() => formatCPF(form.value.document))
+
 //TODO melhorar
 const form = ref({
   user: {
@@ -64,6 +69,10 @@ const form = ref({
   registrationNumber: '',
   document: '',
 })
+
+const onDocumentInput = (value: string) => {
+  form.value.document = value.replace(/\D/g, '')
+}
 
 watch(
   () => props.student,

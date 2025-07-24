@@ -28,6 +28,9 @@
               :loading="loadingStore.loading"
               @update:options="loadStudents"
             >
+              <template #item.document="{ item }">
+                {{ formatCPF(item.document) }}
+              </template>
               <template #item.actions="{ item }">
                 <TableRowActions
                   :item="item"
@@ -64,6 +67,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DataTableHeader } from 'vuetify'
 import { useNotificationStore } from '@/stores/notification'
+import { formatCPF } from '@/utils/mask'
 
 const headers: DataTableHeader[] = [
   { title: 'RA', align: 'start', key: 'registrationNumber' },
