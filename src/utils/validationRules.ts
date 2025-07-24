@@ -6,7 +6,7 @@ export const name = (v: string) =>
 export const nameOnlyLetters = (v: string) =>
   /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(v) || 'O nome só pode conter letras e espaços'
 
-export const email = (v: string) => /.+@.+\..+/.test(v) || 'E-mail inválido'
+export const email = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'E-mail inválido'
 
 export const passwordMin = (v: string) => v.length >= 8 || 'A senha deve ter no mínimo 8 caracteres'
 
