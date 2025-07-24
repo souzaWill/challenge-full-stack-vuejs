@@ -17,7 +17,7 @@ const router = useRouter()
 const errorMessage = ref<string | null>(null)
 
 const handleLoginSuccess = () => {
-  router.push('/students')
+  router.push('/')
 }
 
 const handleLoginError = (message: string | null) => {

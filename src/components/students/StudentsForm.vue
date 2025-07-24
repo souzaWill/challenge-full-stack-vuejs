@@ -3,12 +3,13 @@
     <v-card-text>
       <v-text-field
         v-model="form.registrationNumber"
-        label="Registration number"
-        :readonly="true"
+        label="RA"
+        :readonly="props.isEdit"
+        :disabled="!props.isEdit"
       />
       <v-text-field
         v-model="form.user.name"
-        label="Name"
+        label="Nome"
         :error-messages="errorStore.getFieldError('user.name')"
         :rules="[rules.name, rules.required, rules.nameOnlyLetters]"
       />
@@ -21,9 +22,9 @@
 
       <v-text-field
         v-model="form.document"
-        label="Document"
+        label="CPF"
         :error-messages="errorStore.getFieldError('document')"
-        :rules="[rules.required]"
+        :rules="[rules.required, rules.cpf]"
       />
     </v-card-text>
 
