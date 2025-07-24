@@ -5,10 +5,12 @@
 </template>
 
 <script lang="ts" setup>
+import type { NotificationType } from '@/types/NotificationType'
+
 const { show, timeout, message, color } = defineProps<{
   show: boolean
   timeout: string
   message: string
-  color: 'success' | 'error' | 'info' | 'warning' //TODO
+  color: NotificationType
 }>()
 </script>
