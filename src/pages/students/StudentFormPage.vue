@@ -8,7 +8,7 @@
           </v-card-title>
           <StudentsForm
             :student="student"
-            :isEdit="!!id"
+            :id="id"
             @submit="handleSubmit"
             @cancel="router.push('/students')"
           />
@@ -41,7 +41,7 @@ onMounted(async () => {
 })
 
 const handleSubmit = async () => {
-  notificationStore.notify('Criado com sucesso', 'success')
+  notificationStore.notify('Salvo com sucesso', 'success')
   router.push('/students')
 }
 </script>
