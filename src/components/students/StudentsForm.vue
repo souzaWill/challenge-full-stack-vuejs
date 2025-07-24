@@ -4,8 +4,8 @@
       <v-text-field
         v-model="form.registrationNumber"
         label="RA"
-        :readonly="props.isEdit"
-        :disabled="!props.isEdit"
+        :readonly="isEdit"
+        :disabled="!isEdit"
       />
       <v-text-field
         v-model="form.user.name"
@@ -27,6 +27,7 @@
         :error-messages="studentStore.getFieldError('document')"
         :rules="[rules.required, rules.cpf]"
         maxlength="14"
+        :readonly="isEdit"
       />
     </v-card-text>
 
@@ -50,7 +51,7 @@ import { useNotificationStore } from '@/stores/notification'
 
 const props = defineProps<{
   student?: Student | null
-  isEdit?: boolean
+  id?: string
 }>()
 const emit = defineEmits(['submit', 'cancel'])
 const studentStore = useStudentsStore()
@@ -73,11 +74,20 @@ const onDocumentInput = (value: string) => {
   form.value.document = value.replace(/\D/g, '')
 }
 
+const isEdit = computed(() => !!props.id)
+
 watch(
   () => props.student,
   (newStudent) => {
     if (newStudent) {
-      form.value = structuredClone(newStudent)
+      form.value = {
+        registrationNumber: newStudent.registrationNumber,
+        document: newStudent.document,
+        user: {
+          name: newStudent.user.name,
+          email: newStudent.user.email,
+        },
+      }
     }
   },
   { immediate: true },
@@ -87,16 +97,17 @@ const handleSubmit = async () => {
   const { valid } = await formRef.value?.validate()
   if (!valid) return
 
-  if (props.isEdit) {
-    await studentStore.updateStudent(form.value)
+  if (!!props.id) {
+    await studentStore.updateStudent(props.id, form.value)
   } else {
     await studentStore.createStudent(form.value)
   }
 
-  if (!studentStore.hasError) {
-    emit('submit')
+  if (studentStore.hasError && studentStore.error) {
+    notificationStore.notify(studentStore.error, 'error')
+    return
   }
 
-  notificationStore.notify(studentStore.error, 'error')
+  emit('submit')
 }
 </script>
