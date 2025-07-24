@@ -5,7 +5,7 @@
       <v-card-text>
         <v-row>
           <v-col align-self="start" cols="12" sm="8">
-            <SearchInput @handle-search="loadStudents"></SearchInput>
+            <SearchInput placeholder="Buscar por nome..." @handle-search="onSearch"></SearchInput>
           </v-col>
           <v-col align-self="end" cols="12" sm="4" class="mt-sm-0 mt-2">
             <CreateButton
@@ -92,6 +92,11 @@ const loadStudents = async (options?: any) => {
   if (studentsStore.hasError) {
     notificationStore.notify(studentsStore.error, 'error')
   }
+}
+
+const onSearch = (search: string) => {
+  studentsStore.setSearch(search)
+  loadStudents()
 }
 
 const handleDeleteStudent = async () => {

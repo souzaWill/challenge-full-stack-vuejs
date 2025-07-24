@@ -39,6 +39,11 @@ export const useStudentsStore = defineStore('student', () => {
   const fetchStudents = async (options?: any) => {
     loadingStore.start()
     clearError()
+
+    if (search.value) {
+      options = { search: search.value }
+    }
+
     try {
       const { data, total } = await fetchStudentsApi(options)
       students.value = data
