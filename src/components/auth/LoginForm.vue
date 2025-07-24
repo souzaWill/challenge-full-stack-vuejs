@@ -9,7 +9,7 @@
       prepend-inner-icon="mdi-email-outline"
       variant="outlined"
       :rules="[rules.required, rules.email]"
-      :error-messages="errorStore.getFieldError('email')"
+      :error-messages="authStore.getFieldError('email')"
     />
 
     <v-text-field
@@ -23,7 +23,7 @@
       variant="outlined"
       @click:append-inner="() => (visible = !visible)"
       :rules="[rules.required]"
-      :error-messages="errorStore.getFieldError('password')"
+      :error-messages="authStore.getFieldError('password')"
     />
     <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal">
       Log in
@@ -34,7 +34,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
-import { useErrorStore } from '@/stores/error'
 
 const { onSuccess, onError } = defineProps<{
   onSuccess: () => void
@@ -47,7 +46,6 @@ const valid = ref(false)
 const formRef = ref()
 const visible = ref(false)
 const authStore = useAuthStore()
-const errorStore = useErrorStore()
 
 const rules = {
   required: (v: string) => !!v || 'Campo obrigatório',
@@ -61,7 +59,7 @@ const handleSubmit = async () => {
 
   const credentials = { email: email.value, password: password.value }
   const success = await authStore.login(credentials)
-  success ? onSuccess() : onError(errorStore.message)
+  success ? onSuccess() : onError(authStore.error)
   //TODO changing to emit
 }
 </script>

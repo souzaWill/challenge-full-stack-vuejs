@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import AppSnackbar from '@/components/shared/AppSnackbar.vue'
 import { useAuthStore } from '@/stores/auth'
-import { useErrorStore } from '@/stores/error'
 import { useNotificationStore } from '@/stores/notification'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -41,7 +40,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const drawer = ref(false)
 const authStore = useAuthStore()
-const errorStore = useErrorStore()
 const notificationStore = useNotificationStore()
 
 const logout = async () => {

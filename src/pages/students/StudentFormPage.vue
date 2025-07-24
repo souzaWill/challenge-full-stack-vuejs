@@ -43,5 +43,5 @@ onMounted(async () => {
 const handleSubmit = async () => {
   notificationStore.notify('Salvo com sucesso', 'success')
   router.push('/students')
-}
+} //TODO handle error
 </script>

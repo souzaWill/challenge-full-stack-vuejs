@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { handleStoreUser } from '@/services/userService'
-import { useErrorStore } from './error'
 import { useLoadingStore } from './loading'
+import { ref, computed } from 'vue'
 
 interface UserForm {
   email: string
@@ -11,23 +10,28 @@ interface UserForm {
   confirmPassword: string
 }
 
+interface FieldError {
+  field: string
+  message: string
+}
+
 export const useUserStore = defineStore('user', () => {
-  const errorStore = useErrorStore()
   const loadingStore = useLoadingStore()
+  const fieldErrors = ref<FieldError[]>([])
+  const error = ref('')
 
   const handleError = (err: any) => {
     const response = err.response
     const msg =
       response?.data?.message || 'Ocorreu um erro interno no servidor. Tente novamente mais tarde.'
-    const status = response?.status || 500
     const fields = response?.data?.errors || []
 
-    errorStore.setError(msg, status, fields)
+    setError(msg, fields)
   }
 
   const create = async (userForm: UserForm) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
 
     try {
       await handleStoreUser(userForm)
@@ -39,7 +43,30 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  const hasError = computed(() => !!error.value || fieldErrors.value?.length > 0)
+
+  const getFieldError = (field: string) => {
+    return fieldErrors?.value
+      ?.filter((error) => error.field === field)
+      ?.map((error) => error.message)
+  }
+
+  const clearError = () => {
+    error.value = ''
+    fieldErrors.value = []
+  }
+
+  const setError = (msg: string, fields: FieldError[]) => {
+    error.value = msg
+    fieldErrors.value = fields
+  }
+
   return {
     create,
+    hasError,
+    getFieldError,
+    clearError,
+    setError,
+    error,
   }
 })

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { handleLoginRequest } from '@/services/authService'
 import type { User } from '@/types/user'
-import { useErrorStore } from './error'
 import { useLoadingStore } from './loading'
 
 interface Credentials {
@@ -10,11 +9,17 @@ interface Credentials {
   password: string
 }
 
+interface FieldError {
+  field: string
+  message: string
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref(localStorage.getItem('token'))
   const loadingStore = useLoadingStore()
-  const errorStore = useErrorStore()
+  const fieldErrors = ref<FieldError[]>([])
+  const error = ref('')
 
   const isAuthenticated = computed(() => !!token.value)
 
@@ -22,15 +27,14 @@ export const useAuthStore = defineStore('auth', () => {
     const response = err.response
     const msg =
       response?.data?.message || 'Ocorreu um erro interno no servidor. Tente novamente mais tarde.'
-    const status = response?.status || 500
     const fields = response?.data?.errors || []
 
-    errorStore.setError(msg, status, fields)
+    setError(msg, fields)
   }
 
   const login = async (credentials: Credentials) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
 
     try {
       const { user: responseUser, token: responseToken } = await handleLoginRequest(credentials)
@@ -51,11 +55,34 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
   }
 
+  const hasError = computed(() => !!error.value || fieldErrors.value?.length > 0)
+
+  const getFieldError = (field: string) => {
+    return fieldErrors?.value
+      ?.filter((error) => error.field === field)
+      ?.map((error) => error.message)
+  }
+
+  const clearError = () => {
+    error.value = ''
+    fieldErrors.value = []
+  }
+
+  const setError = (msg: string, fields: FieldError[]) => {
+    error.value = msg
+    fieldErrors.value = fields
+  }
+
   return {
     user,
     token,
     isAuthenticated,
     login,
     logout,
+    hasError,
+    getFieldError,
+    clearError,
+    setError,
+    error,
   }
 })
