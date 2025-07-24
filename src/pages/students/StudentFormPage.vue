@@ -24,11 +24,13 @@ import { useStudentsStore } from '@/stores/students'
 import { ref, onMounted } from 'vue'
 import StudentsForm from '@/components/students/StudentsForm.vue'
 import type { Student } from '@/types/student'
+import { useNotificationStore } from '@/stores/notification'
 
 const route = useRoute()
 const router = useRouter()
-
 const userStore = useStudentsStore()
+const notificationStore = useNotificationStore()
+
 const id = route.params.id as string | undefined
 const student = ref<Student>()
 
@@ -39,6 +41,7 @@ onMounted(async () => {
 })
 
 const handleSubmit = async () => {
-  //todo notify
+  notificationStore.notify('Criado com sucesso', 'success')
+  router.push('/students')
 }
 </script>

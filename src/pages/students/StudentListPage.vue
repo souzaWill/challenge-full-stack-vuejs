@@ -63,6 +63,7 @@ import type { Student } from '@/types/student'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DataTableHeader } from 'vuetify'
+import { useNotificationStore } from '@/stores/notification'
 
 const headers: DataTableHeader[] = [
   { title: 'RA', align: 'start', key: 'registrationNumber' },
@@ -76,6 +77,8 @@ const studentToDelete = ref<Student | null>(null)
 
 const studentsStore = useStudentsStore()
 const loadingStore = useLoadingStore()
+const notificationStore = useNotificationStore()
+
 const router = useRouter()
 
 const loadStudents = async () => {
@@ -85,8 +88,8 @@ const loadStudents = async () => {
 const handleDeleteStudent = async () => {
   if (studentToDelete.value?.id != null) {
     await studentsStore.deleteStudent(studentToDelete.value?.id)
-    confirmDeleteDialog.value = false
-    await loadStudents()
+    closeConfirmDeleteDialog()
+    notificationStore.notify('Deletado com sucesso', 'success')
   }
   studentToDelete.value = null
 }

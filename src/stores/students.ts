@@ -91,6 +91,7 @@ export const useStudentsStore = defineStore('student', () => {
     } catch (err: any) {
       handleError(err)
     } finally {
+      await fetchStudents()
       loadingStore.stop()
     }
   }

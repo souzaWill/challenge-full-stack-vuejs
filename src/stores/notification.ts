@@ -11,7 +11,7 @@ export const useNotificationStore = defineStore('notification', () => {
   const notify = (
     msg: string,
     msgType: NotificationType = 'info',
-    showingTime: string = '3000',
+    showingTime: string = '5000',
   ) => {
     message.value = msg
     type.value = msgType
