@@ -94,6 +94,7 @@ export const useStudentsStore = defineStore('student', () => {
   const deleteStudent = async (id: string) => {
     loadingStore.start()
     clearError()
+    setSearch('')
     try {
       await deleteStudentApi(id)
     } catch (err: any) {
