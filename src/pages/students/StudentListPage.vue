@@ -87,14 +87,7 @@ const notificationStore = useNotificationStore()
 const router = useRouter()
 
 const loadStudents = async (options?: any) => {
-  const { page, itemsPerPage, sortBy, sortDesc } = options
-
-  await studentsStore.fetchStudents({
-    page,
-    perPage: itemsPerPage,
-    sortField: sortBy?.[0] ?? undefined,
-    sortDirection: sortDesc?.[0] ? 'desc' : 'asc',
-  })
+  await studentsStore.fetchStudents(options)
 
   if (studentsStore.hasError) {
     notificationStore.notify(studentsStore.error, 'error')
@@ -103,8 +96,8 @@ const loadStudents = async (options?: any) => {
 
 const handleDeleteStudent = async () => {
   if (studentToDelete.value?.id != null) {
-    const ok = await studentsStore.deleteStudent(studentToDelete.value?.id)
-    if (!ok) {
+    await studentsStore.deleteStudent(studentToDelete.value?.id)
+    if (studentsStore.hasError) {
       notificationStore.notify(studentsStore.error, 'error')
       return
     }

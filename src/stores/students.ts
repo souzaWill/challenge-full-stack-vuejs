@@ -91,10 +91,8 @@ export const useStudentsStore = defineStore('student', () => {
     clearError()
     try {
       await deleteStudentApi(id)
-      return true
     } catch (err: any) {
       handleError(err)
-      return false
     } finally {
       await fetchStudents()
       loadingStore.stop()
