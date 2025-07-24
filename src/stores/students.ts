@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Student } from '@/types/student'
 import {
   fetchStudentsApi,
@@ -8,8 +8,12 @@ import {
   deleteStudentApi,
   findById,
 } from '@/services/studentService'
-import { useErrorStore } from './error'
 import { useLoadingStore } from './loading'
+
+interface FieldError {
+  field: string
+  message: string
+}
 
 export const useStudentsStore = defineStore('student', () => {
   const students = ref<Student[]>([])
@@ -17,7 +21,8 @@ export const useStudentsStore = defineStore('student', () => {
   const itemsPerPage = ref(10)
   const search = ref('')
   const loadingStore = useLoadingStore()
-  const errorStore = useErrorStore()
+  const fieldErrors = ref<FieldError[]>([])
+  const error = ref('')
 
   const setSearch = (term: string) => {
     search.value = term
@@ -25,19 +30,18 @@ export const useStudentsStore = defineStore('student', () => {
 
   const handleError = (err: any) => {
     const response = err.response
-    const msg = response?.data?.message || 'Erro inesperado'
-    const status = response?.status || 500
+    const error =
+      response?.data?.message || 'Ocorreu um erro interno no servidor. Tente novamente mais tarde.'
     const fields = response?.data?.errors || []
-
-    errorStore.setError(msg, status, fields)
+    setError(error, fields)
   }
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (options?: any) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
 
     try {
-      const { data, total } = await fetchStudentsApi()
+      const { data, total } = await fetchStudentsApi(options)
       students.value = data
       totalItems.value = total
     } catch (err: any) {
@@ -49,7 +53,7 @@ export const useStudentsStore = defineStore('student', () => {
 
   const createStudent = async (data: any) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
     try {
       return await createStudentApi(data)
     } catch (err: any) {
@@ -61,7 +65,7 @@ export const useStudentsStore = defineStore('student', () => {
 
   const find = async (id: string) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
     try {
       return await findById(id)
     } catch (err: any) {
@@ -71,11 +75,11 @@ export const useStudentsStore = defineStore('student', () => {
     }
   }
 
-  const updateStudent = async (data: any) => {
+  const updateStudent = async (id: string, data: any) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
     try {
-      return await updateStudentApi(data)
+      return await updateStudentApi(id, data)
     } catch (err: any) {
       handleError(err)
     } finally {
@@ -85,7 +89,7 @@ export const useStudentsStore = defineStore('student', () => {
 
   const deleteStudent = async (id: string) => {
     loadingStore.start()
-    errorStore.clearError()
+    clearError()
     try {
       await deleteStudentApi(id)
     } catch (err: any) {
@@ -94,6 +98,24 @@ export const useStudentsStore = defineStore('student', () => {
       await fetchStudents()
       loadingStore.stop()
     }
+  }
+
+  const hasError = computed(() => !!error.value || fieldErrors.value?.length > 0)
+
+  const getFieldError = (field: string) => {
+    return fieldErrors?.value
+      ?.filter((error) => error.field === field)
+      ?.map((error) => error.message)
+  }
+
+  const clearError = () => {
+    error.value = ''
+    fieldErrors.value = []
+  }
+
+  const setError = (msg: string, fields: FieldError[]) => {
+    error.value = msg
+    fieldErrors.value = fields
   }
 
   return {
@@ -106,5 +128,10 @@ export const useStudentsStore = defineStore('student', () => {
     itemsPerPage,
     setSearch,
     find,
+    hasError,
+    getFieldError,
+    clearError,
+    setError,
+    error,
   }
 })

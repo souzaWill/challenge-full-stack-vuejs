@@ -17,7 +17,8 @@ export const useUserStore = defineStore('user', () => {
 
   const handleError = (err: any) => {
     const response = err.response
-    const msg = response?.data?.message || 'Erro inesperado'
+    const msg =
+      response?.data?.message || 'Ocorreu um erro interno no servidor. Tente novamente mais tarde.'
     const status = response?.status || 500
     const fields = response?.data?.errors || []
 

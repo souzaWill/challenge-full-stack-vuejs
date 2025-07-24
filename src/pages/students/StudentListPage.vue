@@ -74,8 +74,9 @@ const headers: DataTableHeader[] = [
   { title: 'Name', align: 'start', key: 'user.name' },
   { title: 'Email', align: 'start', key: 'user.email' },
   { title: 'Document', align: 'start', key: 'document' },
-  { title: 'Actions', key: 'actions', align: 'start' },
+  { title: 'Actions', key: 'actions', align: 'start', sortable: false },
 ]
+
 const confirmDeleteDialog = ref(false)
 const studentToDelete = ref<Student | null>(null)
 
@@ -85,14 +86,22 @@ const notificationStore = useNotificationStore()
 
 const router = useRouter()
 
-const loadStudents = async () => {
-  await studentsStore.fetchStudents()
+const loadStudents = async (options?: any) => {
+  await studentsStore.fetchStudents(options)
+
+  if (studentsStore.hasError) {
+    notificationStore.notify(studentsStore.error, 'error')
+  }
 }
 
 const handleDeleteStudent = async () => {
   if (studentToDelete.value?.id != null) {
     await studentsStore.deleteStudent(studentToDelete.value?.id)
     closeConfirmDeleteDialog()
+    if (studentsStore.hasError) {
+      notificationStore.notify(studentsStore.error, 'error')
+      return
+    }
     notificationStore.notify('Deletado com sucesso', 'success')
   }
   studentToDelete.value = null
