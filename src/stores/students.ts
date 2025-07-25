@@ -9,11 +9,7 @@ import {
   findById,
 } from '@/services/studentService'
 import { useLoadingStore } from './loading'
-
-interface FieldError {
-  field: string
-  message: string
-}
+import type { FieldError } from '@/types/FieldError'
 
 export const useStudentsStore = defineStore('student', () => {
   const students = ref<Student[]>([])

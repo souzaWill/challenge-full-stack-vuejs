@@ -74,7 +74,7 @@ const headers: DataTableHeader[] = [
   { title: 'Name', align: 'start', key: 'user.name' },
   { title: 'Email', align: 'start', key: 'user.email' },
   { title: 'Document', align: 'start', key: 'document' },
-  { title: 'Actions', key: 'actions', align: 'start', sortable: false },
+  { title: 'Ações', key: 'actions', align: 'start', sortable: false },
 ]
 
 const confirmDeleteDialog = ref(false)

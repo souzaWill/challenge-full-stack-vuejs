@@ -3,15 +3,11 @@ import { ref, computed } from 'vue'
 import { handleLoginRequest } from '@/services/authService'
 import type { User } from '@/types/user'
 import { useLoadingStore } from './loading'
+import type { FieldError } from '@/types/FieldError'
 
 interface Credentials {
   email: string
   password: string
-}
-
-interface FieldError {
-  field: string
-  message: string
 }
 
 export const useAuthStore = defineStore('auth', () => {

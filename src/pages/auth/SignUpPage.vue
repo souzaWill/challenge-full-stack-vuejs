@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
     <ErrorAlert :message="errorMessage" />
-    <UserForm :onSuccess="handleSignupSuccess" :onError="handleSignupError" />
+    <UserForm @success="onSignupSuccess" @error="onSignupError" />
     <SignupText />
   </v-card>
 </template>
@@ -16,11 +16,11 @@ import UserForm from '@/components/auth/UserForm.vue'
 const router = useRouter()
 const errorMessage = ref<string | null>(null)
 
-const handleSignupSuccess = () => {
+const onSignupSuccess = () => {
   router.push('/login')
 }
 
-const handleSignupError = (message: string | null) => {
+const onSignupError = (message: string | null) => {
   errorMessage.value = message
 }
 </script>

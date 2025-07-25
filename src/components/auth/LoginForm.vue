@@ -35,9 +35,9 @@
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
 
-const { onSuccess, onError } = defineProps<{
-  onSuccess: () => void
-  onError: (message: string | null) => void
+const emit = defineEmits<{
+  (e: 'success'): void
+  (e: 'error', message: string | null): void
 }>()
 
 const email = ref('')
@@ -59,7 +59,6 @@ const handleSubmit = async () => {
 
   const credentials = { email: email.value, password: password.value }
   const success = await authStore.login(credentials)
-  success ? onSuccess() : onError(authStore.error)
-  //TODO changing to emit
+  success ? emit('success') : emit('error', authStore.error)
 }
 </script>

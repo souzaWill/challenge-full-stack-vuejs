@@ -2,17 +2,13 @@ import { defineStore } from 'pinia'
 import { handleStoreUser } from '@/services/userService'
 import { useLoadingStore } from './loading'
 import { ref, computed } from 'vue'
+import type { FieldError } from '@/types/FieldError'
 
 interface UserForm {
   email: string
   name: string
   password: string
   confirmPassword: string
-}
-
-interface FieldError {
-  field: string
-  message: string
 }
 
 export const useUserStore = defineStore('user', () => {

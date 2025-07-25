@@ -1,9 +1,8 @@
-export interface Student {
+import type { User } from './user'
+
+export type Student = {
   id?: string | null
   registrationNumber: string
   document: string
-  user: {
-    email: string
-    name: string
-  }
+  user: User
 }
