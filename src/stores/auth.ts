@@ -1,17 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { handleLoginRequest } from '@/services/authService'
-
-interface User {
-  id: string
-  email: string
-  name: string
-}
-
-interface FieldError {
-  field: string
-  message: string
-}
+import type { User } from '@/types/user'
+import { useLoadingStore } from './loading'
+import type { FieldError } from '@/types/FieldError'
 
 interface Credentials {
   email: string
@@ -21,20 +13,24 @@ interface Credentials {
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref(localStorage.getItem('token'))
-  const loading = ref(false)
-  const fieldErrors = ref<FieldError[] | null>(null)
-  const error = ref<string | null>(null)
+  const loadingStore = useLoadingStore()
+  const fieldErrors = ref<FieldError[]>([])
+  const error = ref('')
 
   const isAuthenticated = computed(() => !!token.value)
 
-  const resetErrors = () => {
-    fieldErrors.value = null
-    error.value = null
+  const handleError = (err: any) => {
+    const response = err.response
+    const msg =
+      response?.data?.message || 'Ocorreu um erro interno no servidor. Tente novamente mais tarde.'
+    const fields = response?.data?.errors || []
+
+    setError(msg, fields)
   }
 
   const login = async (credentials: Credentials) => {
-    loading.value = true
-    resetErrors()
+    loadingStore.start()
+    clearError()
 
     try {
       const { user: responseUser, token: responseToken } = await handleLoginRequest(credentials)
@@ -43,24 +39,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('token', responseToken)
       return true
     } catch (err: any) {
-      //TODO: melhorar
-      if (err.response) {
-        // Erros de resposta do servidor (status code fora de 2xx)
-        if (err.response.status === 400 && Array.isArray(err.response.data?.errors)) {
-          fieldErrors.value = err.response.data.errors
-        } else {
-          error.value = err.response.data?.message || 'Ocorreu um erro desconhecido.'
-        }
-      } else if (err.request) {
-        // Requisição feita, mas sem resposta (e.g., rede offline)
-        error.value = 'Não foi possível conectar ao servidor. Verifique sua conexão.'
-      } else {
-        // Algo aconteceu na configuração da requisição que disparou um erro
-        error.value = 'Erro ao configurar a requisição de login.'
-      }
-      return false // Indica falha no login
+      handleError(err)
     } finally {
-      loading.value = false
+      loadingStore.stop()
     }
   }
 
@@ -70,14 +51,34 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
   }
 
+  const hasError = computed(() => !!error.value || fieldErrors.value?.length > 0)
+
+  const getFieldError = (field: string) => {
+    return fieldErrors?.value
+      ?.filter((error) => error.field === field)
+      ?.map((error) => error.message)
+  }
+
+  const clearError = () => {
+    error.value = ''
+    fieldErrors.value = []
+  }
+
+  const setError = (msg: string, fields: FieldError[]) => {
+    error.value = msg
+    fieldErrors.value = fields
+  }
+
   return {
     user,
     token,
-    loading,
-    fieldErrors,
-    error,
     isAuthenticated,
     login,
     logout,
+    hasError,
+    getFieldError,
+    clearError,
+    setError,
+    error,
   }
 })

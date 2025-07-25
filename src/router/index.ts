@@ -1,5 +1,6 @@
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import GuestLayout from '@/layouts/GuestLayout.vue'
+import NotFoundPage from '@/pages/NotFoundPage.vue'
 import { useAuthStore } from '@/stores/auth'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -13,7 +14,7 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
-          component: () => import('@/pages/LoginPage.vue'),
+          component: () => import('@/pages/auth/LoginPage.vue'),
         },
       ],
     },
@@ -24,25 +25,40 @@ const router = createRouter({
         {
           path: '',
           name: 'signin',
-          component: () => import('@/pages/SignUpPage.vue'),
+          component: () => import('@/pages/auth/SignUpPage.vue'),
         },
       ],
     },
     {
       path: '/',
+      redirect: '/students',
+    },
+    {
+      path: '/students',
       component: AuthLayout,
       children: [
         {
           path: '',
-          name: 'home',
-          component: () => import('@/pages/HomePage.vue'),
-          meta: { requiresAuth: true },
+          name: 'students.list',
+          component: () => import('@/pages/students/StudentListPage.vue'),
+        },
+        {
+          path: 'create',
+          name: 'students.create',
+          component: () => import('@/pages/students/StudentFormPage.vue'),
+        },
+        {
+          path: '/students/:id/edit',
+          name: 'students.edit',
+          component: () => import('@/pages/students/StudentFormPage.vue'),
+          props: true,
         },
       ],
     },
     {
-      path: '/:catchAll(.*)',
-      redirect: '/login', //TODO fazer uma pagina de 404
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFoundPage,
     },
   ],
 })

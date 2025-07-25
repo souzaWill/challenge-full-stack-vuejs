@@ -9,7 +9,7 @@
       prepend-inner-icon="mdi-email-outline"
       variant="outlined"
       :rules="[rules.required, rules.email]"
-      :error-messages="getFieldErrors(authStore.fieldErrors, 'email')"
+      :error-messages="authStore.getFieldError('email')"
     />
 
     <v-text-field
@@ -23,26 +23,21 @@
       variant="outlined"
       @click:append-inner="() => (visible = !visible)"
       :rules="[rules.required]"
-      :error-messages="getFieldErrors(authStore.fieldErrors, 'password')"
+      :error-messages="authStore.getFieldError('password')"
     />
     <v-btn type="submit" block class="mb-8" color="blue" size="large" variant="tonal">
       Log in
     </v-btn>
   </v-form>
-
-  <!-- TODO: talvez esse componente deva ficar globalmente ou na pagina de login avaliar -->
-  <AppLoading :show="authStore.loading" />
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
-import { getFieldErrors } from '@/utils/getFieldErrors'
-import AppLoading from '@/components/shared/AppLoading.vue'
 
-const { onSuccess, onError } = defineProps<{
-  onSuccess: () => void
-  onError: (message: string | null) => void
+const emit = defineEmits<{
+  (e: 'success'): void
+  (e: 'error', message: string | null): void
 }>()
 
 const email = ref('')
@@ -64,6 +59,6 @@ const handleSubmit = async () => {
 
   const credentials = { email: email.value, password: password.value }
   const success = await authStore.login(credentials)
-  success ? onSuccess() : onError(authStore.error)
+  success ? emit('success') : emit('error', authStore.error)
 }
 </script>
